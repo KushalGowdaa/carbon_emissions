@@ -17,6 +17,7 @@ class CoalMine(models.Model):
 
 class EmissionRecord(models.Model):
     excavation_tonnes = models.FloatField()
+    excavation_hours = models.IntegerField()
     transportation_cost = models.FloatField()  # e.g., per km or per tonne
     fuel_usage_liters = models.FloatField()  # Fuel for equipment
     electricity_usage_kwh = models.FloatField()  # Electricity for accommodation
@@ -67,7 +68,7 @@ class CarbonSink(models.Model):
 
     def save(self, *args, **kwargs):
         self.sequestration_rate = self.calculate_sequestration_rate()
-        self.total_sequestration = self.forest_area_hectares * self.sequestration_rate
+        self.total_sequestration = round(self.forest_area_hectares * self.sequestration_rate, 2)
         super().save(*args, **kwargs)
 
     def __str__(self):

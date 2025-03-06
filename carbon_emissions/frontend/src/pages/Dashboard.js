@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import { DashboardData } from "../components/API";
 import Chart from "chart.js/auto";
 import {Line, Bar, Pie} from 'react-chartjs-2';
+import GapAnalysis from "./GapAnalysis";
 
 const Dashboard = () => {
     const [dashboardData, setDashboardData] = useState(null);
@@ -12,7 +13,7 @@ const Dashboard = () => {
 
     if (!dashboardData) return <p>Loading...</p>;
 
-    const emissionData = dashboardData.emissions_breakdown || {};
+    const emissionData = dashboardData.emission_breakdown || {};
 
     const emissionsBreakdownData = {
         labels: ['Excavation', 'Transportation', 'Fuel Usage', 'Electricity'],
@@ -49,25 +50,36 @@ const Dashboard = () => {
     };
 
     return (
-        <div>
-            <h1>Live Dashboard</h1>
-
-            <div>
-                <h2>Emission Breakdown</h2>
-                <Bar data={emissionsBreakdownData} />
+        <div className="d-flex justify-content-center flex-column" style={{
+            background: "linear-gradient(135deg, #f0fdf4, #d9f7be)",
+        }}>
+        <div className="container d-flex justify-content-center flex-column" >
+            <div className="bg-white p-4">
+                <h1 className="d-flex justify-content-center text-success">QuantC</h1>
+                <p className="text-success d-flex justify-content-center">Quantification of Carbon emissions</p>
+            </div>
+            <div className="row">
+                <div className="col card m-3">
+                    <div>
+                        <h2 className="d-flex justify-content-center text-success m-3">Emission Breakdown</h2>
+                        <Bar className="card m-3 h-100" data={emissionsBreakdownData} />
+                    </div>
+                </div>
+                <div className="col card m-3">
+                    <h2 className="d-flex justify-content-center text-success m-3">Carbon Sinks vs Emissions Gap</h2>
+                    <Pie className="card m-3" data={carbonSinkVersusEmissionData} />
+                </div>
             </div>
 
-            <div>
-                <h2>Effectiveness of Strategies</h2>
-                <p>Coming soon...</p>
+
+            <div className="card ">
+                <GapAnalysis></GapAnalysis>
             </div>
 
-            <div>
-                <h2>Carbon Sinks vs Emissions Gap</h2>
-                <Pie data={carbonSinkVersusEmissionData} />
+            <div className="d-flex felx-column justify-content-center m-3">
+                <button className="btn btn-success text-white w-50 fw-bold" onClick={printReport}>Print Summary Report</button>
             </div>
-
-            <button onClick={printReport}>Print Summary Report</button>
+        </div>
         </div>
     );
 };

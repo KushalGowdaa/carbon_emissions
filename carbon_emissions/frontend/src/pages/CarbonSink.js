@@ -1,33 +1,47 @@
 import React, {useState, useEffect} from "react";
 import { getCarbonSink, createCarbonSinkRecord } from "../components/API";
+import {useNavigate} from 'react-router-dom';
 
 const CarbonSink = () => {
+
+  const navigate = useNavigate();
+
     const [sinks, setSinks] = useState([]);
     const [newSink, setNewSink] = useState({
-        mine_location: '',
-        forest_area_hectares: ''
+        mine_location: 'other',
+        forest_area_hectares: '',
     });
 
     useEffect(()=>{
-        getCarbonSink().then(data => createCarbonSinkRecord(data));
+        getCarbonSink().then(data => setSinks(data));
     }, []);
 
     const handleChange = (e) => {
+      const {name, value} = e.target
         setNewSink({
             ...newSink,
-            [e.traget.name]: e.target.value
+            [name]: value,
         });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        await createCarbonSinkRecord(newSink);
-        getCarbonSink().then(data => setNewSink(data));
+        try {
+          console.log("Submitting Data:", newSink);  // Debug Payload
+          await createCarbonSinkRecord(newSink);
+          const data = await getCarbonSink();
+          setSinks(data);
+          alert("Carbon Sink record created successfully!");
+          navigate('/Dashboard');
+      } catch (error) {
+          console.error("Error Details:", error.response.data);  // Django Error Details
+          alert("Failed to create Carbon Sink record.");
+      }
     };
 
     return (
     <div
-      className="d-flex flex-column justify-content-center align-items-center vh-100"
+      className="d-flex flex-column justify-content-center align-items-center"
       style={{
         background: "linear-gradient(135deg, #f0fdf4, #d9f7be)"
       }}
@@ -45,18 +59,6 @@ const CarbonSink = () => {
 
         <div className="card-body p-4">
           <form onSubmit={handleSubmit}>
-            <div className="form-floating mb-3">
-              <input
-                type="number"
-                className="form-control"
-                id="areaHectares"
-                name="forest_area_hectares"
-                placeholder="forest area in hectares"
-                onChange={handleChange}
-                required
-              />
-              <label htmlFor="areaHectares">Forest area</label>
-            </div>
 
             <div className="form-floating mb-3">
               <select
@@ -75,16 +77,32 @@ const CarbonSink = () => {
               <label htmlFor="mine_type">Mine Location</label>
             </div>
 
+            <div className="form-floating mb-3">
+              <input
+                type="number"
+                className="form-control"
+                id="areaHectares"
+                name="forest_area_hectares"
+                placeholder="forest area in hectares"
+                onChange={handleChange}
+                required
+              />
+              <label htmlFor="areaHectares">Forest area (Hectares)</label>
+            </div>
             <button type="submit" className="btn btn-success w-100 fw-bold">
               Calculate Carbon Sink
             </button>
           </form>
         </div>
         <div className="card-body p-4">
-            <ul className="list-group">
+        <h2>Existing Carbon Sinks</h2>
+            <ul>
                 {sinks.map((sink) => (
-                    <li className="list-group-item" key={sink.id}>
-                        <strong>Area:</strong>{sink.forest_area_hectares} ha | <strong>Offset:</strong> {sink.afforestation_offset} kg CO2e
+                    <li key={sink.id}>
+                        <strong>Location:</strong> {sink.mine_location.toUpperCase()} | 
+                        <strong> Area:</strong> {sink.forest_area_hectares} ha | 
+                        <strong> Sequestration Rate:</strong> {sink.sequestration_rate} kg CO2e/ha/year |
+                        <strong> Total Sequestration:</strong> {sink.total_sequestration} kg CO2e
                     </li>
                 ))}
             </ul>

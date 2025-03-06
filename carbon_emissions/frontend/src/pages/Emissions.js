@@ -1,10 +1,15 @@
 import React, {useState, useEffect} from "react";
 import { getEmissions, CreateEmissionRecord } from "../components/API";
+import {useNavigate} from 'react-router-dom';
 
 const Emissions = () =>{
+
+    const navigate = useNavigate();
+
     const [emissions, setEmissions] = useState([]);
     const [newEmission, setNewEmission] = useState({
         excavation_tonnes: '',
+        excavation_hours: '',
         transportation_cost: '',
         fuel_usage_liters:'',
         electricity_usage_kwh: '',
@@ -25,10 +30,12 @@ const Emissions = () =>{
         e.preventDefault();
         await CreateEmissionRecord(newEmission);
         getEmissions().then(data => setEmissions(data));
+
+        navigate('/CarbonSink');
     };
 
     return (
-      <div className="d-flex flex-column justify-content-center align-items-center vh-100"
+      <div className="d-flex flex-column justify-content-center align-items-center"
       style={{
         background: "linear-gradient(135deg, #f0fdf4, #d9f7be)"
       }}
@@ -54,7 +61,31 @@ const Emissions = () =>{
                 onChange={handleChange}
                 required
                 />
-                <label htmlFor="excavationTonnes">Excavation data</label>
+                <label htmlFor="excavationTonnes">Excavation (Tonnes)</label>
+              </div>
+
+              <div className="form-floating mb-3">
+                <input
+                type="number"
+                className="form-control"
+                id="excavationHours"
+                name="excavation_hours"
+                placeholder="Excavation in tonnes"
+                onChange={handleChange}
+                required
+                />
+                <label htmlFor="excavationHours">Excavation time (hours)</label>
+              </div>
+              
+              <div className="form-floating mb-3">
+                <input type="number"
+                className="form-control"
+                id="fuelUsage"
+                name="fuel_usage_liters"
+                placeholder="Fuel Usage in Liters"
+                onChange={handleChange}
+                required/>
+                <label htmlFor="fuelUsage">Fuel usage (Liters)</label>
               </div>
 
               <div className="form-floating mb-3">
@@ -67,18 +98,22 @@ const Emissions = () =>{
                 onChange={handleChange}
                 required
                 />
-                <label htmlFor="transportationCost">Cost of transport</label>
+                <label htmlFor="transportationCost">Transport (km)</label>
               </div>
 
               <div className="form-floating mb-3">
-                <input type="number"
-                id="fuelUsage"
-                name="fuel_usage_liters"
-                placeholder="Fuel Usage in Liters"
+                <input
+                type="number"
+                className="form-control"
+                id="ElectricityCost"
+                name="electricity_usage_kwh"
+                placeholder="Electricity Used"
                 onChange={handleChange}
-                required></input>
-                <label htmlFor="fuelUsage">Fuel usage</label>
+                required
+                />
+                <label htmlFor="transportationCost">Electricity Usage (kwh)</label>
               </div>
+
               <button type="submit" className="btn btn-success w-100 fw-bold">
                 Submit
               </button>

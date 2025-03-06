@@ -1,8 +1,10 @@
 import React, {useState} from "react";
 import axios from 'axios';
+import {useNavigate} from 'react-router-dom';
 
 function CoalData() {
     
+  const navigate = useNavigate();
 
     const [formData, setData] = useState({
         name : '',
@@ -29,7 +31,7 @@ function CoalData() {
                 methane_emission_factor: parseFloat(formData.methane_emission_factor)
             }
 
-            const response = await axios.post(`http://localhost:8000/api/CoalMine/`, 
+            const response = await axios.post(`http://localhost:8000/api/mine/`, 
                 ProcessedData,
                 {
                     headers: {
@@ -38,6 +40,7 @@ function CoalData() {
                 }
             );
             alert('Great! lets move on to the next phase');
+            navigate('/Emissions');
             console.log(response.data);
         }catch (error) {
             alert('There was a problem in submitting data, please try again.');
@@ -59,7 +62,7 @@ function CoalData() {
       </h1>
 
       {/* Responsive Card Container */}
-      <div className="card shadow w-50">
+      <div className=" container card shadow w-50">
         <div className="card-header bg-white text-success text-center" style={{ borderRadius: "15px 15px 0 0"}}>
           <h2>Enter Coal Mine Details</h2>
         </div>

@@ -27,7 +27,7 @@ class CarbonSinkListCreateView(generics.ListCreateAPIView):
 class GapAnalysisView(APIView):
     def post(self, request):
         totalEmissions = EmissionRecord.objects.aggregate(total=models.Sum('total_emissions_kg'))['total'] or 0
-        carbonSinkCapacity = CarbonSink.objects.aggregate(total= models.Sum('afforestation_offset'))['total'] or 0
+        carbonSinkCapacity = CarbonSink.objects.aggregate(total= models.Sum('total_sequestration'))['total'] or 0
 
         gapValue = round(totalEmissions - carbonSinkCapacity, 2)
 
@@ -87,7 +87,7 @@ class dashboardView(APIView):
         ).last() or {}
 
         gapData = GapAnalysis.objects.last()
-        carbonSinkData = CarbonSink.objects.aggregate(total=models.Sum('afforestation_offset'))['total'] or 0
+        carbonSinkData = CarbonSink.objects.aggregate(total=models.Sum('total_sequestration'))['total'] or 0
 
         return Response ({
             'emission_breakdown': emissionsData,
